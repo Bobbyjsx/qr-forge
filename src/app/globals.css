@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-orange: #FF5722;
+  --color-brand-orange-light: #FF8A65;
+  --color-brand-bg: #FFFFFF;
+  --color-brand-surface: #F8F9FA;
+  --color-brand-border: #E5E7EB;
+  --color-brand-text: #1A1A1B;
+  --color-brand-muted: #9CA3AF;
+  
+  --font-sans: var(--font-geist-sans), "Inter", sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFFFFF;
+  --foreground: #1A1A1B;
+  --brand-orange: #FF5722;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Repeated Dot Pattern Background */
+.vibrant-dots {
+  background-image: radial-gradient(#E5E7EB 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+/* Fun Components */
+.fun-card {
+  background: white;
+  border: 1px solid var(--color-brand-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.fun-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(255, 87, 34, 0.1), 0 4px 6px -2px rgba(255, 87, 34, 0.05);
+}
+
+.fun-button {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 0.75rem;
+  font-weight: 600;
+}
+
+.fun-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.fun-input {
+  background: #F3F4F6;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.fun-input:focus {
+  background: white;
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.1);
+}
+
+/* Bouncy Entry Animation */
+.bouncy-enter {
+  animation: bouncy-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bouncy-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

@@ -1,36 +1,73 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Local Setup
 
-First, run the development server:
+### 1. Requirements
+- **pnpm** (Package Manager)
+- **Docker Desktop** (Running)
+- **Supabase CLI** (`pnpm add -g supabase`)
+
+---
+
+### 2. Choose Your Backend Strategy
+
+#### Option A: New Local Supabase (Recommended for Fresh Starts)
+Initialize a new Supabase environment specifically for this project:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Initialize and start Supabase
+pnpm supabase init
+pnpm supabase start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will output your `API URL`, `anon key`, and `service_role key`. Copy these into your `.env.local`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Option B: Connect to Existing Stack (e.g., `backend`)
+If you already have a Supabase stack running in Docker (like a project named `backend`):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Start your existing containers
+docker start supabase_db_backend supabase_auth_backend supabase_rest_backend \
+             supabase_realtime_backend supabase_storage_backend supabase_kong_backend \
+             supabase_studio_backend supabase_inbucket_backend supabase_analytics_backend \
+             supabase_vector_backend supabase_pg_meta_backend
 
-## Learn More
+# Get the keys for your existing stack
+cd path/to/backend/project && pnpm supabase status
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Environment Configuration
+Create a `.env.local` file in the root directory using the keys from Step 2:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
 
-## Deploy on Vercel
+### 4. Database Migration
+Apply the QR Forge schema to your chosen Supabase instance:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**If using Option A (Supabase CLI):**
+```bash
+pnpm supabase migration up
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**If using Option B (Manual psql):**
+```bash
+export PGPASSWORD=postgres
+psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -f supabase/migrations/20260529094129_initial_schema.sql
+```
+
+### 5. Application Launch
+```bash
+pnpm install
+pnpm dev
+```
+
+### 6. Development Access
+- **App:** [http://localhost:3000](http://localhost:3000)
+- **Supabase Studio:** [http://127.0.0.1:54323](http://127.0.0.1:54323)
+- **Mailpit:** [http://127.0.0.1:54324](http://127.0.0.1:54324)
