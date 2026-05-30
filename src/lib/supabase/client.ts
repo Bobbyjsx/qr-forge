@@ -1,5 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { PostgrestError } from '@supabase/supabase-js';
+import * as Sentry from "@sentry/nextjs";
 
 export const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,7 +14,14 @@ export const supabase = createBrowserClient(
 export function getServerError(error: unknown): string {
   if (!error) return 'An unknown error occurred';
 
-  // 1. Handle case where error is a container object { error: ... }
+  // 1. Report to Sentry for technical telemetry
+  // Only capture if it's not a common expected error like 'Unauthorized'
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  if (!errorMessage.includes('Unauthorized') && !errorMessage.includes('ASSET_NOT_FOUND')) {
+    Sentry.captureException(error);
+  }
+
+  // 2. Handle case where error is a container object { error: ... }
   if (typeof error === 'object' && error !== null && 'error' in error) {
     const innerError = (error as { error: unknown }).error;
     if (innerError && typeof innerError === 'object' && !('message' in innerError)) {

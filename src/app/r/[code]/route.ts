@@ -3,6 +3,7 @@ import { QRManager } from '@/lib/core/qr-manager';
 import { createClient } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET(
   request: NextRequest,
@@ -31,6 +32,12 @@ export async function GET(
     const message = (error as Error).message;
     const isPaused = message === 'ASSET_PAUSED';
     const isExpired = message === 'ASSET_EXPIRED';
+    const isNotFound = message === 'ASSET_NOT_FOUND';
+
+    // Report to Sentry if it's not a common expected state
+    if (!isPaused && !isExpired && !isNotFound) {
+      Sentry.captureException(error);
+    }
     
     let title = 'Link Not Found';
     let subMessage = `The link #${code.toUpperCase()} does not exist.`;
