@@ -5,7 +5,7 @@ import { signOutAction, getCurrentIdentityAction } from '@/api/actions/auth';
 import { useRouter } from 'next/navigation';
 
 /**
- * Hook to fetch current user identity.
+ * Hook to get the current user.
  */
 export function useGetCurrentIdentity() {
   return useQuery({
@@ -17,7 +17,7 @@ export function useGetCurrentIdentity() {
 }
 
 /**
- * Hook to execute node sign-out.
+ * Hook to log out.
  */
 export function useSignOut() {
   const router = useRouter();

@@ -32,8 +32,8 @@ export async function GET(
     const isPaused = message === 'ASSET_PAUSED';
     const isExpired = message === 'ASSET_EXPIRED';
     
-    let title = 'QR Code Not Found';
-    let subMessage = `The requested link #${code.toUpperCase()} does not exist.`;
+    let title = 'Link Not Found';
+    let subMessage = `The link #${code.toUpperCase()} does not exist.`;
     let status = 404;
 
     if (isPaused) {
@@ -42,7 +42,7 @@ export async function GET(
       status = 403;
     } else if (isExpired) {
       title = 'Link Expired';
-      subMessage = `This link (#${code.toUpperCase()}) has reached its expiration date and is no longer active.`;
+      subMessage = `This link (#${code.toUpperCase()}) has expired and is no longer active.`;
       status = 410;
     }
 
@@ -77,12 +77,12 @@ export async function GET(
 
           <div class="pt-4">
             <a href="/" class="inline-block bg-[#FF5722] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-orange-100 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              Go to Home
+              Go Home
             </a>
           </div>
 
           <footer class="pt-12">
-            <p class="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em]">QR Forge Precision Systems</p>
+            <p class="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em]">QR Forge</p>
           </footer>
         </div>
       </body>

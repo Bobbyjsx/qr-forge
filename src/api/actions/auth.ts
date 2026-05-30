@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getServerError } from '@/lib/supabase/client';
 
 /**
- * Signs out the current node/user.
+ * Logs the user out.
  */
 export async function signOutAction() {
   const supabase = await createClient();
@@ -14,7 +14,7 @@ export async function signOutAction() {
 }
 
 /**
- * Fetches current identity session.
+ * Gets the current user session.
  */
 export async function getCurrentIdentityAction() {
   const supabase = await createClient();

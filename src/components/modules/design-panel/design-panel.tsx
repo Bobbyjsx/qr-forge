@@ -58,7 +58,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
     const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
 
     if (file.size > maxSize) {
-      toast.error('File size exceeds 2MB limit');
+      toast.error('File size is too big (max 2MB)');
       return;
     }
 
@@ -82,7 +82,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
         .getPublicUrl(data.path);
 
       setValue('design.logoUrl', publicUrl, { shouldDirty: true });
-      toast.success('Logo uploaded successfully');
+      toast.success('Logo uploaded!');
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Upload failed';
       toast.error(message);
@@ -99,12 +99,12 @@ export function DesignPanel({ form }: DesignPanelProps) {
           <div className="p-2 bg-orange-100 rounded-lg">
             <Palette size={18} className="text-brand-orange" />
           </div>
-          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Color Engine</h4>
+          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Colors</h4>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Pattern Bits</label>
+            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Main Color</label>
             <input 
               type="color" 
               {...register('design.fgColor')}
@@ -112,7 +112,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Canvas Base</label>
+            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Background</label>
             <input 
               type="color" 
               {...register('design.bgColor')}
@@ -127,12 +127,12 @@ export function DesignPanel({ form }: DesignPanelProps) {
           <div className="p-2 bg-orange-100 rounded-lg">
             <Type size={18} className="text-brand-orange" />
           </div>
-          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Pattern Geometry</h4>
+          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Styles</h4>
         </div>
 
         <div className="space-y-4">
            <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Module Style</label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Dot Style</label>
               <div className="grid grid-cols-3 gap-2 p-1 bg-zinc-50 rounded-xl">
                 {DOT_TYPES.map((type) => (
                   <button
@@ -152,7 +152,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
            </div>
 
            <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Finder Style</label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Corner Style</label>
               <div className="grid grid-cols-3 gap-2 p-1 bg-zinc-50 rounded-xl">
                 {CORNER_TYPES.map((type) => (
                   <button
@@ -178,12 +178,12 @@ export function DesignPanel({ form }: DesignPanelProps) {
           <div className="p-2 bg-orange-100 rounded-lg">
             <Layout size={18} className="text-brand-orange" />
           </div>
-          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Architecture</h4>
+          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Layout</h4>
         </div>
 
         <div className="space-y-6">
            <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Outer Border</label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Border</label>
               <div className="flex gap-2 p-1 bg-zinc-50 rounded-xl">
                 {(['none', 'solid', 'dashed'] as BorderStyle[]).map((style) => (
                   <button
@@ -196,7 +196,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
                         : 'text-zinc-400 hover:text-zinc-600'
                     }`}
                   >
-                    {style === 'none' ? 'Clean' : style}
+                    {style === 'none' ? 'None' : style}
                   </button>
                 ))}
               </div>
@@ -204,7 +204,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
 
            <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Internal Margin</label>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Padding</label>
                 <span className="text-[10px] font-mono font-bold text-brand-orange">{margin}px</span>
               </div>
               <input 
@@ -223,13 +223,13 @@ export function DesignPanel({ form }: DesignPanelProps) {
           <div className="p-2 bg-orange-100 rounded-lg">
             <ImageIcon size={18} className="text-brand-orange" />
           </div>
-          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Brand Signature</h4>
+          <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-widest">Logo</h4>
         </div>
 
         <div className="space-y-4">
           <div className="flex gap-2">
             <Input 
-              placeholder="Identity Asset URL"
+              placeholder="Paste image URL here"
               {...register('design.logoUrl')}
               className="bg-zinc-50 border-0 focus:bg-white flex-1 h-12 text-sm font-medium"
             />
@@ -255,7 +255,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
           {logoUrl && (
             <div className="space-y-4 p-5 bg-zinc-50 rounded-2xl border border-zinc-100 shadow-inner">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Asset Preview</span>
+                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Preview</span>
                 <button 
                   type="button"
                   onClick={() => setValue('design.logoUrl', '', { shouldDirty: true })}
@@ -269,7 +269,7 @@ export function DesignPanel({ form }: DesignPanelProps) {
               </div>
               <div className="space-y-3 pt-2">
                 <div className="flex justify-between items-center px-1">
-                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Scaling Factor</label>
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Size</label>
                   <span className="text-[10px] font-mono font-bold text-brand-orange bg-orange-50 px-2 py-0.5 rounded-full">{logoPadding}px</span>
                 </div>
                 <input 

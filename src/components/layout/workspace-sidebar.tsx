@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { PortalTooltip } from '@/components/ui/portal-tooltip';
 import { Button } from '@/components/ui/button';
 import { useGetCurrentIdentity, useSignOut } from '@/api/useAuth/auth';
@@ -80,8 +80,8 @@ export function WorkspaceSidebar() {
   };
 
   const navItems = [
-    { icon: Plus, label: 'Create New QR', href: '/workspace' },
-    { icon: History, label: 'My Asset Library', href: '/assets' },
+    { icon: Plus, label: 'Create QR Code', href: '/workspace' },
+    { icon: History, label: 'My Library', href: '/assets' },
   ];
 
   return (
@@ -150,7 +150,7 @@ export function WorkspaceSidebar() {
                           {user?.email?.split('@')[0] || 'Guest'}
                         </p>
                         <p className="text-[10px] font-bold text-zinc-400 uppercase">
-                           Identity Verified
+                           Account Active
                         </p>
                       </div>
                     </div>
@@ -158,7 +158,7 @@ export function WorkspaceSidebar() {
                     <div className="space-y-2">
                        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest px-1">Subscription</p>
                        <div className="bg-orange-50/50 p-3 rounded-xl border border-orange-100/50">
-                          <p className="text-xs font-bold text-brand-orange uppercase">{user ? 'Verified Identity' : 'Free Access'}</p>
+                          <p className="text-xs font-bold text-brand-orange uppercase">{user ? 'Pro Account' : 'Free Account'}</p>
                        </div>
                     </div>
 
@@ -170,7 +170,7 @@ export function WorkspaceSidebar() {
                       className="w-full gap-3 rounded-xl"
                       onClick={handleSignOut}
                     >
-                      <LogOut size={16} /> Sign Out Node
+                      <LogOut size={16} /> Log Out
                     </Button>
                   </div>
                 </motion.div>
@@ -193,7 +193,7 @@ export function WorkspaceSidebar() {
                     className="flex-1 min-w-0"
                   >
                     <p className="text-[11px] font-black text-zinc-800 truncate uppercase tracking-tighter">
-                      {user?.email?.split('@')[0] || 'Guest Node'}
+                      {user?.email?.split('@')[0] || 'Guest'}
                     </p>
                   </motion.div>
                 )}
@@ -256,8 +256,8 @@ export function WorkspaceSidebar() {
                   <User size={24} />
                 </div>
                 <div className="flex-1">
-                  <p className="font-black text-sm uppercase tracking-tighter text-zinc-800">{user?.email?.split('@')[0] || 'Guest Node'}</p>
-                  <p className="text-[10px] font-bold text-brand-orange uppercase">{user ? 'Verified Identity' : 'Free Access'}</p>
+                  <p className="font-black text-sm uppercase tracking-tighter text-zinc-800">{user?.email?.split('@')[0] || 'Guest'}</p>
+                  <p className="text-[10px] font-bold text-brand-orange uppercase">{user ? 'Pro Account' : 'Free Account'}</p>
                 </div>
                 {user && (
                    <button onClick={handleSignOut} className="text-zinc-400 hover:text-red-500">

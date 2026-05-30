@@ -51,13 +51,13 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
         });
         if (error) throw error;
         setIsSignedUp(true);
-        toast.success('Verification link transmitted');
+        toast.success('Verification email sent');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         router.refresh();
         router.push('/assets');
-        toast.success('Welcome back to the forge');
+        toast.success('Signed in successfully');
       }
     } catch (error: unknown) {
       toast.error(getServerError(error));
@@ -75,21 +75,21 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
           </div>
           
           <div className="space-y-3">
-             <h2 className="text-3xl font-black text-zinc-900 tracking-tight uppercase italic">Check Your Email</h2>
+             <h2 className="text-3xl font-black text-zinc-900 tracking-tight uppercase">Check Your Email</h2>
              <p className="text-zinc-500 font-medium leading-relaxed">
-                We&apos;ve dispatched a verification node to <span className="text-zinc-800 font-bold">{email}</span>. 
-                Please activate the link to establish your identity.
+                We&apos;ve sent a verification link to <span className="text-zinc-800 font-bold">{email}</span>. 
+                Please click the link in the email to verify your account.
              </p>
           </div>
 
           <div className="pt-4">
              <Button variant="ghost" onClick={() => setIsSignedUp(false)} className="text-zinc-400 hover:text-brand-orange font-bold uppercase tracking-widest text-[10px]">
-                Wrong email? Back to Signup
+                Wrong email? Go back
              </Button>
           </div>
 
           <footer className="pt-12 text-center border-t border-zinc-100">
-            <p className="text-[10px] text-zinc-300 font-black uppercase tracking-[0.3em]">Identity Verification Protocol</p>
+            <p className="text-[10px] text-zinc-300 font-black uppercase tracking-[0.3em]">Security Check</p>
           </footer>
         </div>
       </main>
@@ -107,22 +107,22 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
             </div>
             <span className="font-black text-2xl tracking-tight text-zinc-800">QR Forge</span>
           </Link>
-          <h2 className="text-3xl font-black tracking-tight text-zinc-900 uppercase italic">
-            {mode === 'signup' ? 'Initiate Forge' : 'Identity Access'}
+          <h2 className="text-3xl font-black tracking-tight text-zinc-900 uppercase">
+            {mode === 'signup' ? 'Create Account' : 'Welcome Back'}
           </h2>
           <p className="text-zinc-500 font-medium leading-relaxed">
-            {mode === 'signup' ? 'Establish your node to create and manage precision QR assets.' : 'Authorize session to manage your resolution endpoints.'}
+            {mode === 'signup' ? 'Join us to create and track your QR codes.' : 'Sign in to manage your QR codes.'}
           </p>
         </div>
 
         <div className="fun-card p-10 space-y-8 bg-white border border-zinc-100 shadow-sm">
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Terminal</label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
               <div className="relative group">
                 <Input 
                   type="email" 
-                  placeholder="name@precision.forge" 
+                  placeholder="name@example.com" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-12 h-14 bg-zinc-50 border-0 focus:bg-white rounded-xl text-base"
@@ -133,7 +133,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Secure Key</label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Password</label>
               <div className="relative group">
                 <Input 
                   type={showPassword ? 'text' : 'password'} 
@@ -158,7 +158,7 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
               {loading ? <RefreshCw className="animate-spin" size={20} /> : (
                 <>
                   <span className="font-black uppercase tracking-widest">
-                    {mode === 'signup' ? 'Create My Account' : 'Sign In Node'}
+                    {mode === 'signup' ? 'Create Account' : 'Sign In'}
                   </span>
                   <ArrowRight className="ml-auto opacity-40 group-hover:translate-x-1 transition-transform" size={20} />
                 </>
@@ -169,19 +169,19 @@ export default function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
 
         <div className="text-center space-y-4">
           <p className="text-xs text-zinc-500 font-medium uppercase tracking-tight">
-            {mode === 'signup' ? 'Already established?' : "New to the forge?"}
+            {mode === 'signup' ? 'Already have an account?' : "New here?"}
           </p>
           <Link 
             href={mode === 'signup' ? '/auth/login' : '/auth/signup'} 
             className="inline-block px-6 py-2 rounded-full border border-zinc-100 text-zinc-400 hover:text-brand-orange hover:border-orange-100 transition-all font-bold text-[10px] uppercase tracking-[0.2em]"
           >
-            {mode === 'signup' ? 'Access My Account' : 'Forge New Identity'}
+            {mode === 'signup' ? 'Log in' : 'Create an Account'}
           </Link>
         </div>
 
         <footer className="pt-8 text-center border-t border-zinc-100">
           <div className="inline-flex items-center gap-2 text-[9px] text-zinc-300 font-black uppercase tracking-[0.3em]">
-            <ShieldCheck size={14} /> Encrypted Session Node
+            <ShieldCheck size={14} /> Secure Login
           </div>
         </footer>
       </div>

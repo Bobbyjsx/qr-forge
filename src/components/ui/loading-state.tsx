@@ -10,8 +10,8 @@ interface LoadingStateProps {
 }
 
 export function LoadingState({ 
-  title = 'Initializing...', 
-  description = 'Connecting to the forge pipeline...',
+  title = 'Loading...', 
+  description = 'Connecting to our servers...',
   fullScreen = true 
 }: LoadingStateProps) {
   const content = (

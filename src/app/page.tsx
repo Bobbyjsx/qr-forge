@@ -26,7 +26,7 @@ export default async function LandingPage() {
         <div className="flex gap-8 items-center">
           <Link href="/auth/login" className="text-sm font-bold text-zinc-400 hover:text-brand-orange transition-colors">Login</Link>
           <Link href="/onboarding">
-            <Button size="md" className="gap-2 px-8">Start Forging <ArrowRight size={16} /></Button>
+            <Button size="md" className="gap-2 px-8">Start Now <ArrowRight size={16} /></Button>
           </Link>
         </div>
       </nav>
