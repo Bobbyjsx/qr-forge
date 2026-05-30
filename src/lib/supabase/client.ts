@@ -23,18 +23,22 @@ export function getServerError(error: unknown): string {
 
   // 2. Handle Zod .format() objects
   if (typeof error === 'object' && error !== null && !('message' in error)) {
-    const zodError = error as Record<string, any>;
+    const zodError = error as Record<string, { _errors?: string[] } | string[]>;
     const messages: string[] = [];
     
     // Check for root level errors
-    if (Array.isArray(zodError._errors) && zodError._errors.length > 0) {
-      messages.push(...zodError._errors);
+    const rootErrors = (zodError as Record<string, unknown>)._errors;
+    if (Array.isArray(rootErrors) && rootErrors.length > 0) {
+      messages.push(...(rootErrors as string[]));
     }
 
     // Check for field level errors
     Object.entries(zodError).forEach(([key, value]) => {
-      if (key !== '_errors' && value?._errors && Array.isArray(value._errors) && value._errors.length > 0) {
-        messages.push(`${key}: ${value._errors.join(', ')}`);
+      if (key !== '_errors' && value && typeof value === 'object' && '_errors' in value) {
+        const fieldErrors = (value as { _errors: string[] })._errors;
+        if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+          messages.push(`${key}: ${fieldErrors.join(', ')}`);
+        }
       }
     });
 

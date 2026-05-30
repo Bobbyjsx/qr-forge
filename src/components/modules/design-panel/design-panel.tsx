@@ -36,6 +36,8 @@ const CORNER_TYPES = [
   { value: 'extra-rounded', label: 'Rounded' },
 ] as const;
 
+type BorderStyle = 'none' | 'solid' | 'dashed';
+
 export function DesignPanel({ form }: DesignPanelProps) {
   const { register, watch, setValue } = form;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -183,11 +185,11 @@ export function DesignPanel({ form }: DesignPanelProps) {
            <div className="space-y-2">
               <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Outer Border</label>
               <div className="flex gap-2 p-1 bg-zinc-50 rounded-xl">
-                {['none', 'solid', 'dashed'].map((style) => (
+                {(['none', 'solid', 'dashed'] as BorderStyle[]).map((style) => (
                   <button
                     key={style}
                     type="button"
-                    onClick={() => setValue('design.borderStyle', style as any, { shouldDirty: true })}
+                    onClick={() => setValue('design.borderStyle', style, { shouldDirty: true })}
                     className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
                       borderStyle === style 
                         ? 'bg-white text-brand-orange shadow-sm border border-orange-100' 

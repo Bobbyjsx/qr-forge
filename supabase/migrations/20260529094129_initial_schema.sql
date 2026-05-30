@@ -6,7 +6,7 @@ create type public.redirect_type as enum ('301', '302', '307');
 
 -- Create qr_routes table
 create table public.qr_routes (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     short_code varchar(255) unique not null,
     destination_url text not null,
     redirect_type public.redirect_type default '302',
@@ -29,7 +29,7 @@ create table public.qr_routes (
 
 -- Create qr_analytics table
 create table public.qr_analytics (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     qr_id uuid references public.qr_routes(id) on delete cascade not null,
     timestamp timestamp with time zone default now(),
     ip_hash text,

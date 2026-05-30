@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Zap, ShieldCheck, Globe, BarChart2, ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';

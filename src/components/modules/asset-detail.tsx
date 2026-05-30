@@ -5,7 +5,6 @@ import { CopyButton } from '@/components/ui/copy-button';
 import { LoadingState } from '@/components/ui/loading-state';
 import { DesignProcessor } from '@/lib/core/design-processor';
 import { getServerError } from '@/lib/supabase/client';
-import { motion } from 'framer-motion';
 import {
   Activity,
   ArrowLeft,
@@ -24,8 +23,8 @@ import {
   Zap
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { use, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import { toast } from 'sonner';
 import { QRCodeForge } from '@/components/ui/qr-code-forge';
 import { useUpdateAsset } from '@/api/useAssets/assets';
@@ -40,8 +39,6 @@ interface AssetPageProps {
 export function AssetDetail({ params }: AssetPageProps) {
   const { code } = use(params);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
 
   const { data, isLoading, error } = useGetAssetWithAnalytics(code);
 
@@ -77,13 +74,7 @@ export function AssetDetail({ params }: AssetPageProps) {
   const totalScans = analytics.length;
   const design = route.design;
   const moduleStyles = DesignProcessor.getModuleStyles(design);
-  
-  // High-precision resolution logic: 
-  // 301 (Static) = Direct to destination. 
-  // 302 (Dynamic) = Route through edge node.
-  const qrUrl = route.redirectType === '301' 
-    ? route.destinationUrl 
-    : (typeof window !== 'undefined' ? `${window.location.origin}/r/${route.shortCode}` : '');
+  const qrUrl = typeof window !== 'undefined' ? `${window.location.origin}/r/${route.shortCode}` : '';
 
   const handleDownload = () => {
     const canvas = document.querySelector('#qr-code-canvas canvas') as HTMLCanvasElement;

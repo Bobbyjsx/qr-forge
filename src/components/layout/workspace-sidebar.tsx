@@ -71,7 +71,6 @@ export function WorkspaceSidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   const { data: user } = useGetCurrentIdentity();
   const signOutMutation = useSignOut();

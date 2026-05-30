@@ -1,7 +1,7 @@
 -- Add management_token for guest editing security
 -- Add guest_id for anonymous session tracking
 ALTER TABLE public.qr_routes 
-ADD COLUMN management_token uuid DEFAULT uuid_generate_v4(),
+ADD COLUMN management_token uuid DEFAULT gen_random_uuid(),
 ADD COLUMN guest_id text;
 
 -- Index for lookup performance

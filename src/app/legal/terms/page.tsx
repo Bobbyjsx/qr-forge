@@ -29,8 +29,8 @@ export default function TermsPage() {
       <section className="space-y-6">
         <h2 className="text-2xl font-black text-zinc-800 uppercase tracking-tight">3. System Uptime & SLA</h2>
         <p className="text-zinc-600 leading-relaxed">
-          While we aim for 99.99% resolution availability, the forge is provided "as is". We reserve the right 
-          to throttle high-volume anonymous nodes to ensure stability for our "Professional Identity" subscribers.
+          While we aim for 99.99% resolution availability, the forge is provided &quot;as is&quot;. We reserve the right 
+          to throttle high-volume anonymous nodes to ensure stability for our &quot;Professional Identity&quot; subscribers.
         </p>
       </section>
 

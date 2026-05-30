@@ -27,10 +27,10 @@ export function useGetAssets() {
  * Hook to fetch a single asset for the editor.
  */
 export function useGetAsset(token: string | null | undefined) {
-  return useQuery<QRRoute>({
+  return useQuery<QRRoute | null>({
     queryKey: ['edit-asset', token],
     queryFn: async () => {
-      if (!token) throw new Error("Missing management token");
+      if (!token) return null;
       return await getAssetAction(token);
     },
     enabled: !!token

@@ -30,7 +30,7 @@ export default function PrivacyPage() {
         <h2 className="text-2xl font-black text-zinc-800 uppercase tracking-tight">3. Storage Protocols</h2>
         <p className="text-zinc-600 leading-relaxed">
           Asset configurations and brand signatures are stored on encrypted edge databases. 
-          Users with a "Verified Identity" maintain full control over their data lifecycle, including 
+          Users with a &quot;Verified Identity&quot; maintain full control over their data lifecycle, including 
           the ability to permanently decommission any resolution node and its associated telemetry.
         </p>
       </section>

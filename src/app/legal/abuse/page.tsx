@@ -19,7 +19,7 @@ export default function AbusePage() {
           materials, please transmit the shortcode or full management URL to our resolution team immediately.
         </p>
         <div className="p-6 bg-zinc-900 rounded-2xl text-white font-mono text-sm border border-zinc-800 shadow-xl">
-           <p className="text-zinc-400 mb-2">// Transmission Channel</p>
+           <p className="text-zinc-400 mb-2">{"// Transmission Channel"}</p>
            <p className="text-brand-orange">{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</p>
         </div>
       </section>

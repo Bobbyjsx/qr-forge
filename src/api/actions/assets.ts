@@ -29,11 +29,11 @@ export async function getAssetsListAction(): Promise<QRRouteWithAnalytics[]> {
 
     if (error) throw new Error(getServerError(error));
 
-    return (data as any[]).map((route) => {
+    return (data as unknown[]).map((rawRoute) => {
+      const route = rawRoute as Record<string, unknown> & { qr_analytics: { count: number }[] };
       const analyticsCount = route.qr_analytics?.[0]?.count || 0;
-      const { qr_analytics, ...rest } = route;
       return {
-        ...transformQRRoute(rest),
+        ...(transformQRRoute(route) as Record<string, unknown>),
         analyticsCount,
       } as QRRouteWithAnalytics;
     });
@@ -50,8 +50,6 @@ export async function getAssetAction(token: string): Promise<QRRoute> {
   const authClient = await createClient();
   const { data: { user } } = await authClient.auth.getUser();
 
-  // If user is logged in, use their client to enforce RLS
-  // If guest, use service role but perform manual token validation
   const supabase = user ? authClient : createServiceRoleClient();
   const qrManager = new QRManager(supabase);
 
@@ -76,7 +74,6 @@ export async function createAssetAction(payload: QRRouteSchema): Promise<QRRoute
   let guestId: string | undefined;
   if (!user) {
     const headerList = await headers();
-    // Use x-real-ip as a less spoofable fallback if available
     const ip = headerList.get("x-real-ip") || headerList.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
     const ua = headerList.get("user-agent") || "unknown";
     guestId = generateGuestId(ip, ua);

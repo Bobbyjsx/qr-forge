@@ -5,23 +5,17 @@ import {
   Zap, 
   Globe, 
   Layout, 
-  ChevronRight,
-  Monitor,
-  Copy,
-  Check,
   RefreshCw,
   Link2,
   Save,
   AlertCircle,
   Sparkles,
-  ArrowLeft,
   ArrowRight,
-  XCircle,
   Eye,
   EyeOff,
-  Pencil,
   Fingerprint,
   Calendar as CalendarIcon,
+  Check,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -37,7 +31,6 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { CopyButton } from '@/components/ui/copy-button';
 import { getServerError } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { QRRoute } from '@/types/resources';
 import { transformQRRoute } from '@/lib/utils/case-transform';
 import { QRCodeForge } from '@/components/ui/qr-code-forge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -160,9 +153,6 @@ export function QRGenerator() {
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://qrforge.com';
   const previewShortCode = existingAsset?.shortCode;
-  
-  // Logic: If Dynamic (302) and we have a code, route through /r/. 
-  // If Static (301) or New creation, encode the target URL directly.
   const qrValue = mode === 'redirect' && previewShortCode 
     ? `${baseUrl}/r/${previewShortCode}` 
     : (watchedUrl || 'https://qrforge.com');

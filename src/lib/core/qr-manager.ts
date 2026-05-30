@@ -71,7 +71,7 @@ export class QRManager {
       .single();
 
     if (error) throw error;
-    return transformQRRoute(data);
+    return transformQRRoute(data) as QRRoute;
   }
 
   /**
@@ -108,7 +108,7 @@ export class QRManager {
       .single();
 
     if (error) throw error;
-    return transformQRRoute(data);
+    return transformQRRoute(data) as QRRoute;
   }
 
   /**
@@ -151,7 +151,7 @@ export class QRManager {
       .single();
 
     if (error) throw error;
-    return transformQRRoute(data);
+    return transformQRRoute(data) as QRRoute;
   }
 
   /**

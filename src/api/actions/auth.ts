@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { getServerError } from '@/lib/supabase/client';
-import { redirect } from 'next/navigation';
 
 /**
  * Signs out the current node/user.
