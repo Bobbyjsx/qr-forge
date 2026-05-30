@@ -8,7 +8,10 @@ Sentry.init({
   dsn: "https://4ed3f01ed82c235a6379660298e17fef@o4511248614096896.ingest.us.sentry.io/4511476014186496",
 
   integrations: [
-    Sentry.replayIntegration(),
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false,
+    }),
   ],
 
   // Session Replay

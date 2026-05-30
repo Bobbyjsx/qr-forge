@@ -88,7 +88,16 @@ export function QRGenerator() {
   const watchedCornerDotType = watch('design.cornerDotType') as CornerDotType;
   const watchedMargin = watch('design.margin');
 
-  const { data: existingAsset, isLoading: isLoadingAsset } = useGetAsset(editToken);
+  const { data: existingAsset, isLoading: isLoadingAsset, error: fetchError } = useGetAsset(editToken);
+
+  useEffect(() => {
+    if (fetchError) {
+      const is401 = (fetchError as Error).message?.includes('Unauthorized');
+      if (is401) {
+        router.push('/auth/login');
+      }
+    }
+  }, [fetchError, router]);
 
   useEffect(() => {
     if (existingAsset) {
@@ -173,33 +182,60 @@ export function QRGenerator() {
 
   if (editToken && isLoadingAsset) return <LoadingState title="Loading..." description="Fetching your QR code..." />;
 
+  if (editToken && fetchError) {
+    const is401 = (fetchError as Error)?.message?.includes('Unauthorized');
+    return (
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center p-8 bg-white space-y-6 vibrant-dots text-center">
+        <div className="w-20 h-20 bg-orange-50 rounded-[2.5rem] flex items-center justify-center border-4 border-white shadow-xl">
+           <Zap size={32} className="text-brand-orange" />
+        </div>
+        <div className="space-y-2">
+           <p className="font-bold text-zinc-800 uppercase tracking-widest text-sm">
+             {is401 ? 'Identity Required' : 'Asset Not Found'}
+           </p>
+           <p className="text-zinc-500 text-xs max-w-xs mx-auto">
+             {is401 ? 'Please sign in to edit this QR code.' : 'The requested asset does not exist in the forge.'}
+           </p>
+        </div>
+        <div className="flex flex-col gap-3 w-full max-w-[200px]">
+           {is401 ? (
+              <Button onClick={() => router.push('/auth/login')}>Sign In</Button>
+           ) : (
+              <Button onClick={() => window.location.reload()}>Try Again</Button>
+           )}
+           <Button variant="ghost" onClick={() => router.push('/assets')}>Return to Library</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col lg:flex-row w-full h-full bg-white lg:overflow-hidden">
-      <div className="flex-1 min-h-0 lg:h-full lg:overflow-y-auto custom-scrollbar vibrant-dots p-6 lg:p-12 border-r border-zinc-100">
-        <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-2xl mx-auto space-y-12 pb-24">
-          <header className="space-y-2 mb-8">
+    <div className="flex flex-col lg:flex-row w-full h-[100dvh] bg-white lg:overflow-hidden">
+      <div className="flex-1 min-h-0 lg:h-full lg:overflow-y-auto custom-scrollbar vibrant-dots p-4 sm:p-6 lg:p-12 lg:border-r border-zinc-100">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-2xl mx-auto space-y-8 sm:space-y-12 pb-32 sm:pb-24">
+          <header className="space-y-2 mb-6 sm:mb-8">
             <div className="flex items-center gap-2">
-               <span className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] bg-orange-50 px-2 py-0.5 rounded">
+               <span className="text-[9px] sm:text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] bg-orange-50 px-2 py-0.5 rounded">
                   {editToken ? 'Edit QR Code' : 'Create QR Code'}
                </span>
             </div>
-            <h2 className="text-3xl font-black tracking-tight text-zinc-900">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900">
                {editToken ? `Customize Style` : 'New QR Code'}
             </h2>
-            <p className="text-sm font-medium text-zinc-400">
+            <p className="text-xs sm:text-sm font-medium text-zinc-400">
                {editToken ? 'Change how your QR looks or update its destination.' : 'Create a new QR code for your brand or project.'}
             </p>
           </header>
           
           {editToken && watchedRedirectType === '302' && (
-             <div className="fun-card p-6 flex items-center justify-between bg-orange-50/20 border-brand-orange/10">
-                <div className="flex items-center gap-4">
-                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${watchedIsActive ? 'bg-green-100 text-green-600' : 'bg-zinc-100 text-zinc-400'}`}>
-                      {watchedIsActive ? <Eye size={20} /> : <EyeOff size={20} />}
+             <div className="fun-card p-4 sm:p-6 flex items-center justify-between bg-orange-50/20 border-brand-orange/10">
+                <div className="flex items-center gap-3 sm:gap-4">
+                   <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${watchedIsActive ? 'bg-green-100 text-green-600' : 'bg-zinc-100 text-zinc-400'}`}>
+                      {watchedIsActive ? <Eye size={18} /> : <EyeOff size={18} />}
                    </div>
                    <div>
-                      <h4 className="font-bold text-sm text-zinc-800 uppercase tracking-tight">Status</h4>
-                      <p className="text-xs text-zinc-500 font-medium">{watchedIsActive ? 'Active' : 'Paused'}</p>
+                      <h4 className="font-bold text-xs sm:text-sm text-zinc-800 uppercase tracking-tight">Status</h4>
+                      <p className="text-[10px] sm:text-xs text-zinc-500 font-medium">{watchedIsActive ? 'Active' : 'Paused'}</p>
                    </div>
                 </div>
                 <Button 
@@ -209,79 +245,79 @@ export function QRGenerator() {
                    onClick={() => {
                       setValue('isActive', !watchedIsActive, { shouldDirty: true });
                    }}
-                   className="rounded-xl px-6"
+                   className="rounded-xl px-4 sm:px-6 h-9 sm:h-10 text-[11px] sm:text-xs"
                 >
                    {watchedIsActive ? 'Pause' : 'Resume'}
                 </Button>
              </div>
           )}
 
-          <div className="space-y-6">
+          <div className="space-y-6 sm:space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
                 <Globe size={16} className="text-brand-orange" />
               </div>
-              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800">1. Destination</h3>
+              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-800">1. Destination</h3>
             </div>
             
             {!editToken && (
-               <div className="fun-card p-2 flex flex-col sm:flex-row gap-2">
+               <div className="fun-card p-1.5 sm:p-2 flex flex-col sm:flex-row gap-2">
                <button
                  type="button"
                  onClick={() => setMode('redirect')}
-                 className={`flex-1 p-5 rounded-xl transition-all text-left group relative ${
+                 className={`flex-1 p-4 sm:p-5 rounded-xl transition-all text-left group relative ${
                    mode === 'redirect' 
                    ? 'bg-orange-50 border-2 border-brand-orange/20' 
                    : 'hover:bg-zinc-50'
                  }`}
                >
                  <div className="flex items-center justify-between mb-2">
-                   <span className={`text-[13px] font-bold ${mode === 'redirect' ? 'text-brand-orange' : 'text-zinc-600'}`}>Dynamic Link</span>
-                   {mode === 'redirect' && <div className="w-5 h-5 bg-brand-orange rounded-full flex items-center justify-center"><Check size={12} className="text-white" /></div>}
+                   <span className={`text-[12px] sm:text-[13px] font-bold ${mode === 'redirect' ? 'text-brand-orange' : 'text-zinc-600'}`}>Dynamic Link</span>
+                   {mode === 'redirect' && <div className="w-4 h-4 sm:w-5 sm:h-5 bg-brand-orange rounded-full flex items-center justify-center"><Check size={10} className="text-white sm:w-[12px] sm:h-[12px]" /></div>}
                  </div>
-                 <p className="text-[12px] text-zinc-500 leading-relaxed font-medium">Change the link anytime & track scans.</p>
+                 <p className="text-[11px] sm:text-[12px] text-zinc-500 leading-relaxed font-medium">Change the link anytime & track scans.</p>
                  {isAnonymous && <span className="absolute top-2 right-2 text-[8px] bg-white border border-red-100 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase">Pro</span>}
                </button>
  
                <button
                  type="button"
                  onClick={() => setMode('direct')}
-                 className={`flex-1 p-5 rounded-xl transition-all text-left group relative ${
+                 className={`flex-1 p-4 sm:p-5 rounded-xl transition-all text-left group relative ${
                    mode === 'direct' 
                    ? 'bg-orange-50 border-2 border-brand-orange/20' 
                    : 'hover:bg-zinc-50'
                  }`}
                >
                  <div className="flex items-center justify-between mb-2">
-                   <span className={`text-[13px] font-bold ${mode === 'direct' ? 'text-brand-orange' : 'text-zinc-600'}`}>Static Link</span>
-                   {mode === 'direct' && <div className="w-5 h-5 bg-brand-orange rounded-full flex items-center justify-center"><Check size={12} className="text-white" /></div>}
+                   <span className={`text-[12px] sm:text-[13px] font-bold ${mode === 'direct' ? 'text-brand-orange' : 'text-zinc-600'}`}>Static Link</span>
+                   {mode === 'direct' && <div className="w-4 h-4 sm:w-5 sm:h-5 bg-brand-orange rounded-full flex items-center justify-center"><Check size={10} className="text-white sm:w-[12px] sm:h-[12px]" /></div>}
                  </div>
-                 <p className="text-[12px] text-zinc-500 leading-relaxed font-medium">Permanent link. No tracking.</p>
+                 <p className="text-[11px] sm:text-[12px] text-zinc-500 leading-relaxed font-medium">Permanent link. No tracking.</p>
                </button>
              </div>
             )}
 
-            <div className="fun-card p-8 space-y-8">
+            <div className="fun-card p-6 sm:p-8 space-y-6 sm:space-y-8">
               <div className="space-y-3">
-                <label className="text-xs font-bold text-zinc-500 ml-1 uppercase tracking-widest flex justify-between">
+                <label className="text-[10px] sm:text-xs font-bold text-zinc-500 ml-1 uppercase tracking-widest flex flex-wrap justify-between gap-2">
                    Target URL
-                   {errors.url && <span className="text-red-500 text-[10px] lowercase italic font-normal flex items-center gap-1"><AlertCircle size={10} /> {errors.url.message}</span>}
+                   {errors.url && <span className="text-red-500 text-[10px] lowercase italic font-normal flex items-center gap-1 shrink-0"><AlertCircle size={10} /> {errors.url.message}</span>}
                 </label>
                 <div className="relative">
                   <Input
                     placeholder="https://example.com"
                     {...register('url')}
-                    className={`bg-zinc-50 border-0 focus:bg-white h-14 text-base ${errors.url ? 'ring-2 ring-red-500/20' : ''}`}
+                    className={`bg-zinc-50 border-0 focus:bg-white h-12 sm:h-14 text-sm sm:text-base pr-12 ${errors.url ? 'ring-2 ring-red-500/20' : ''}`}
                   />
-                  <div className="absolute right-4 top-4 text-zinc-300 flex items-center gap-2">
-                    {editToken && <CopyButton value={watchedUrl} size="sm" className="h-8 w-8 bg-white border border-zinc-100 shadow-sm" />}
-                    <Link2 size={20} />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-300 flex items-center gap-2">
+                    {editToken && <CopyButton value={watchedUrl} size="sm" className="h-7 w-7 sm:h-8 sm:w-8 bg-white border border-zinc-100 shadow-sm" />}
+                    <Link2 size={18} className="sm:w-[20px] sm:h-[20px]" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-xs font-bold text-zinc-500 ml-1 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] sm:text-xs font-bold text-zinc-500 ml-1 uppercase tracking-widest flex items-center gap-2">
                    <CalendarIcon size={14} className="text-zinc-300" />
                    Expiration (Optional)
                 </label>
@@ -291,7 +327,7 @@ export function QRGenerator() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full h-14 justify-start text-left font-medium bg-zinc-50 border-0 hover:bg-zinc-100/50 rounded-xl px-4 transition-all",
+                        "w-full h-12 sm:h-14 justify-start text-left font-medium bg-zinc-50 border-0 hover:bg-zinc-100/50 rounded-xl px-4 transition-all text-sm",
                         !watchedExpiresAt && "text-zinc-400"
                       )}
                     >
@@ -303,8 +339,8 @@ export function QRGenerator() {
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0 rounded-[2rem] border border-zinc-100 shadow-2xl overflow-hidden" align="start">
-                    <div className="p-5 border-b border-zinc-50 bg-zinc-50/50 flex items-center justify-between">
+                  <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80 p-0 rounded-[1.5rem] sm:rounded-[2rem] border border-zinc-100 shadow-2xl overflow-hidden" align="start">
+                    <div className="p-4 sm:p-5 border-b border-zinc-50 bg-zinc-50/50 flex items-center justify-between">
                        <div className="flex items-center gap-2">
                           <div className="w-1.5 h-6 bg-brand-orange rounded-full" />
                           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-800">Expiration</span>
@@ -320,7 +356,7 @@ export function QRGenerator() {
                        )}
                     </div>
                     
-                    <div className="p-3">
+                    <div className="p-2 sm:p-3 overflow-hidden">
                        <Calendar
                          mode="single"
                          selected={watchedExpiresAt ? new Date(watchedExpiresAt) : undefined}
@@ -334,6 +370,7 @@ export function QRGenerator() {
                               setValue('expiresAt', d.toISOString(), { shouldDirty: true });
                            }
                          }}
+                         className="mx-auto"
                        />
                     </div>
 
@@ -344,7 +381,7 @@ export function QRGenerator() {
                   </PopoverContent>
                 </Popover>
                 
-                <p className="text-[10px] text-zinc-400 font-medium ml-1">The QR link will stop working after this time.</p>
+                <p className="text-[9px] sm:text-[10px] text-zinc-400 font-medium ml-1">The QR link will stop working after this time.</p>
               </div>
             </div>
           </div>
@@ -357,10 +394,10 @@ export function QRGenerator() {
                   className="space-y-6"
                >
                   <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
                      <Layout size={16} className="text-brand-orange" />
                   </div>
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800">2. Design Settings</h3>
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-800">2. Design Settings</h3>
                   </div>
                   <DesignPanel form={form} />
                </motion.div>
@@ -369,8 +406,8 @@ export function QRGenerator() {
         </form>
       </div>
 
-      <aside className={`w-full lg:w-[450px] lg:h-screen lg:sticky lg:top-0 bg-zinc-50/50 flex flex-col items-center relative transition-all duration-700`}>
-        <div className="w-full flex items-center justify-between p-8 lg:p-12 pb-0 shrink-0">
+      <aside className={`w-full lg:w-[450px] lg:h-full bg-zinc-50/50 flex flex-col items-center relative transition-all duration-700 shrink-0 lg:sticky lg:top-0`}>
+        <div className="w-full flex items-center justify-between p-6 sm:p-8 lg:p-12 pb-0 shrink-0">
           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest font-mono">Live Preview</span>
           <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-zinc-100 shadow-sm">
             <div className={`w-1.5 h-1.5 rounded-full ${editToken ? 'bg-green-500 animate-pulse' : 'bg-zinc-300'}`} />
@@ -380,11 +417,11 @@ export function QRGenerator() {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 p-8 lg:p-12">
+        <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 p-6 sm:p-8 lg:p-12">
            {editToken ? (
-              <div className="w-full space-y-10 bouncy-enter pr-1">
+              <div className="w-full space-y-6 sm:space-y-10 bouncy-enter pr-1">
                  <div 
-                   className="w-full aspect-square fun-card flex items-center justify-center relative p-10 bg-white group shadow-2xl shadow-orange-100/50 shrink-0"
+                   className="w-full max-w-[300px] sm:max-w-none mx-auto aspect-square fun-card flex items-center justify-center relative p-6 sm:p-10 bg-white group shadow-2xl shadow-orange-100/50 shrink-0"
                    style={moduleStyles}
                  >
                    <QRCodeForge
@@ -401,49 +438,49 @@ export function QRGenerator() {
                    />
                  </div>
 
-                 <div className="space-y-6">
-                   <div className="fun-card p-6 space-y-4 bg-white border-zinc-100 shadow-sm">
-                     <div className="flex items-center justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest font-mono">
+                 <div className="space-y-4 sm:space-y-6">
+                   <div className="fun-card p-4 sm:p-6 space-y-3 sm:space-y-4 bg-white border-zinc-100 shadow-sm">
+                     <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-black text-zinc-400 uppercase tracking-widest font-mono">
                        <span>Link Code</span>
                        <span className="text-brand-orange font-bold">#{existingAsset?.shortCode.toUpperCase() || '...'}</span>
                      </div>
-                     <div className="flex items-center gap-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100 group">
-                       <code className="text-xs font-mono text-zinc-600 flex-1 truncate font-medium">{qrValue}</code>
-                       <CopyButton value={qrValue} className="bg-white hover:bg-zinc-50 shadow-sm border border-zinc-100" />
+                     <div className="flex items-center gap-3 bg-zinc-50 p-3 sm:p-4 rounded-xl border border-zinc-100 group">
+                       <code className="text-[10px] sm:text-xs font-mono text-zinc-600 flex-1 truncate font-medium">{qrValue}</code>
+                       <CopyButton value={qrValue} className="bg-white hover:bg-zinc-50 shadow-sm border border-zinc-100 h-8 w-8" />
                      </div>
                    </div>
 
                    {existingAsset?.guestId && (
-                      <div className="fun-card p-6 space-y-4 bg-white border-zinc-100 shadow-sm">
-                        <div className="flex items-center justify-between text-[10px] font-black text-zinc-400 uppercase tracking-widest font-mono">
+                      <div className="fun-card p-4 sm:p-6 space-y-3 sm:space-y-4 bg-white border-zinc-100 shadow-sm">
+                        <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-black text-zinc-400 uppercase tracking-widest font-mono">
                           <span>Owner ID</span>
                           <Fingerprint size={12} className="text-zinc-300" />
                         </div>
-                        <div className="flex items-center gap-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100 group">
-                          <code className="text-[10px] font-mono text-zinc-400 flex-1 truncate">{existingAsset.guestId}</code>
-                          <CopyButton value={existingAsset.guestId} className="bg-white hover:bg-zinc-50 shadow-sm border border-zinc-100" />
+                        <div className="flex items-center gap-3 bg-zinc-50 p-3 sm:p-4 rounded-xl border border-zinc-100 group">
+                          <code className="text-[9px] sm:text-[10px] font-mono text-zinc-400 flex-1 truncate">{existingAsset.guestId}</code>
+                          <CopyButton value={existingAsset.guestId} className="bg-white hover:bg-zinc-50 shadow-sm border border-zinc-100 h-8 w-8" />
                         </div>
                       </div>
                    )}
                  </div>
               </div>
            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8 px-10">
-                 <div className="w-24 h-24 rounded-[2.5rem] bg-white border-4 border-dashed border-zinc-100 flex items-center justify-center shadow-inner relative overflow-hidden group">
+              <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 px-6 sm:px-10 py-12">
+                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] sm:rounded-[2.5rem] bg-white border-4 border-dashed border-zinc-100 flex items-center justify-center shadow-inner relative overflow-hidden group">
                     <div className="absolute inset-0 bg-orange-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Sparkles size={40} className="text-zinc-200 relative z-10 group-hover:text-brand-orange transition-colors" />
+                    <Sparkles size={32} className="text-zinc-200 sm:w-[40px] sm:h-[40px] relative z-10 group-hover:text-brand-orange transition-colors" />
                  </div>
-                 <div className="space-y-3">
-                    <p className="text-lg font-black text-zinc-800 uppercase tracking-tighter italic">Create QR</p>
-                    <p className="text-sm text-zinc-400 leading-relaxed font-medium">Enter a link on the left to generate your custom QR code.</p>
+                 <div className="space-y-2 sm:space-y-3">
+                    <p className="text-base sm:text-lg font-black text-zinc-800 uppercase tracking-tighter italic">Create QR</p>
+                    <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">Enter a link on the left to generate your custom QR code.</p>
                  </div>
               </div>
            )}
         </div>
 
-        <div className="w-full p-8 lg:p-12 pt-0 shrink-0 space-y-4">
+        <div className="w-full p-6 sm:p-8 lg:p-12 pt-0 shrink-0 space-y-3 sm:space-y-4 bg-zinc-50/80 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none fixed bottom-0 lg:relative z-30 lg:z-auto">
            <Button 
-              className="w-full h-16 gap-3 text-base rounded-2xl shadow-xl shadow-orange-100 group"
+              className="w-full h-14 sm:h-16 gap-3 text-sm sm:text-base rounded-2xl shadow-xl shadow-orange-100 group"
               onClick={handleSubmit(onFormSubmit)}
               disabled={!watchedUrl || (editToken ? !isDirty : false) || createMutation.isPending || updateMutation.isPending}
             >
@@ -451,11 +488,11 @@ export function QRGenerator() {
                  <RefreshCw className="animate-spin" size={24} />
               ) : (
                 <>
-                  {editToken ? <Save size={20} /> : <Zap size={20} className="group-hover:fill-white transition-colors" />}
+                  {editToken ? <Save size={18} className="sm:w-[20px] sm:h-[20px]" /> : <Zap size={18} className="sm:w-[20px] sm:h-[20px] group-hover:fill-white transition-colors" />}
                   <span className="uppercase tracking-widest font-black">
                      {editToken ? 'Save Changes' : 'Create QR Code'}
                   </span>
-                  <ArrowRight size={20} className="ml-auto opacity-40 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={18} className="sm:w-[20px] sm:h-[20px] ml-auto opacity-40 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </Button>
@@ -463,7 +500,7 @@ export function QRGenerator() {
             <Button 
                type="button"
                variant="ghost"
-               className="w-full h-12 gap-2 rounded-xl text-zinc-400 hover:text-zinc-600 font-bold uppercase tracking-widest text-[11px]"
+               className="w-full h-10 sm:h-12 gap-2 rounded-xl text-zinc-400 hover:text-zinc-600 font-bold uppercase tracking-widest text-[9px] sm:text-[11px]"
                onClick={handleCancel}
             >
                {editToken ? 'Cancel Edits' : 'Clear Form'}

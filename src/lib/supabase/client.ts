@@ -35,9 +35,9 @@ export function getServerError(error: unknown): string {
     const messages: string[] = [];
     
     // Check for root level errors
-    const rootErrors = (zodError as Record<string, unknown>)._errors;
+    const rootErrors = (zodError as { _errors?: string[] })._errors;
     if (Array.isArray(rootErrors) && rootErrors.length > 0) {
-      messages.push(...(rootErrors as string[]));
+      messages.push(...rootErrors);
     }
 
     // Check for field level errors

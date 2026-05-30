@@ -71,7 +71,7 @@ export async function GET(
           }
         </style>
       </head>
-      <body class="vibrant-dots min-h-screen flex items-center justify-center p-6 text-zinc-900">
+      <body class="vibrant-dots min-h-[100dvh] flex items-center justify-center p-6 text-zinc-900">
         <div class="max-w-md w-full text-center space-y-8">
           <div class="w-20 h-20 bg-orange-50 rounded-[2.5rem] flex items-center justify-center mx-auto border-4 border-white shadow-xl">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FF5722" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a2 2 0 1 1-2.78-2.78"/><path d="M18 5.68a9.24 9.24 0 0 0-1.55-1.12"/><path d="M14.28 2.66a9.42 9.24 0 0 0-4.56 0"/><path d="M6.35 4.56a9.24 9.24 0 0 0-2.28 2.34"/><path d="M2.66 11.42a9.42 9.24 0 0 0 0 4.56"/><path d="M4.56 19.65a9.24 9.24 0 0 0 2.34 2.28"/><path d="M11.42 22.34a9.42 9.24 0 0 0 4.56 0"/><path d="M19.65 20.44a9.24 9.24 0 0 0 2.28-2.34"/><path d="M22.34 14.28a9.42 9.24 0 0 0 0-4.56"/><path d="M20.44 6.35c.1.18.2.36.3.55"/><path d="m2 22 2-2"/></svg>

@@ -36,8 +36,8 @@ export function SecurityFooter() {
         </div>
 
         <div className="pt-10 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-6 opacity-40">
-           <p className="font-bold text-[9px] text-zinc-500 uppercase tracking-[0.4em]">QRForge Protocol © 2026 // Operational Security Tier 1</p>
-           <div className="flex gap-8 font-mono text-[9px] uppercase tracking-widest font-black">
+           <p className="font-bold text-[9px] text-zinc-500 uppercase tracking-[0.4em] text-center md:text-left">QRForge Protocol © 2026 // Operational Security Tier 1</p>
+           <div className="flex flex-wrap justify-center gap-4 sm:gap-8 font-mono text-[9px] uppercase tracking-widest font-black text-center">
               <Link href="/legal/privacy" className="cursor-pointer hover:text-brand-orange transition-colors">Privacy Policy</Link>
               <Link href="/legal/terms" className="cursor-pointer hover:text-brand-orange transition-colors">Terms of Service</Link>
               <Link href="/legal/abuse" className="cursor-pointer hover:text-brand-orange transition-colors">Report Abuse</Link>

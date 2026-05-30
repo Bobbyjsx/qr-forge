@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import QRCodeStyling, {
   DrawType,
   TypeNumber,
@@ -11,6 +11,10 @@ import QRCodeStyling, {
   CornerDotType,
   Options
 } from 'qr-code-styling';
+
+export interface QRCodeForgeHandle {
+  download: (fileName: string) => void;
+}
 
 interface QRCodeForgeProps {
   value: string;
@@ -23,10 +27,9 @@ interface QRCodeForgeProps {
   cornerType?: CornerSquareType;
   cornerDotType?: CornerDotType;
   margin?: number;
-  id?: string;
 }
 
-export const QRCodeForge = ({
+export const QRCodeForge = forwardRef<QRCodeForgeHandle, QRCodeForgeProps>(({
   value,
   size = 280,
   fgColor = '#000000',
@@ -37,10 +40,20 @@ export const QRCodeForge = ({
   cornerType = 'square',
   cornerDotType = 'square',
   margin = 0,
-  id = 'qr-code-canvas'
-}: QRCodeForgeProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+}, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    download(fileName: string) {
+      if (qrCode.current) {
+        qrCode.current.download({
+          name: fileName.replace(/\.[^/.]+$/, ""),
+          extension: 'png'
+        });
+      }
+    }
+  }));
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -48,7 +61,7 @@ export const QRCodeForge = ({
     const options: Options = {
       width: size,
       height: size,
-      type: 'svg' as DrawType,
+      type: 'canvas' as DrawType,
       data: value,
       margin: margin,
       qrOptions: {
@@ -82,13 +95,23 @@ export const QRCodeForge = ({
 
     if (!qrCode.current) {
       qrCode.current = new QRCodeStyling(options);
-      if (ref.current) {
-        qrCode.current.append(ref.current);
+      if (containerRef.current) {
+        // Clear container before initial append to prevent duplicates
+        containerRef.current.innerHTML = '';
+        qrCode.current.append(containerRef.current);
       }
     } else {
       qrCode.current.update(options);
     }
   }, [value, size, fgColor, bgColor, logoUrl, logoPadding, dotType, cornerType, cornerDotType, margin]);
 
-  return <div ref={ref} id={id} className="flex items-center justify-center" />;
-};
+  return (
+    <div 
+      ref={containerRef} 
+      className="flex items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm border border-zinc-100"
+      style={{ width: size, height: size }}
+    />
+  );
+});
+
+QRCodeForge.displayName = 'QRCodeForge';

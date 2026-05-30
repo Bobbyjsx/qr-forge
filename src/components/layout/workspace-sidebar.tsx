@@ -10,11 +10,12 @@ import {
   Menu,
   X,
   User,
-  LogOut
+  LogOut,
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { PortalTooltip } from '@/components/ui/portal-tooltip';
 import { Button } from '@/components/ui/button';
 import { useGetCurrentIdentity, useSignOut } from '@/api/useAuth/auth';
@@ -71,8 +72,9 @@ export function WorkspaceSidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
-  const { data: user } = useGetCurrentIdentity();
+  const { data: user, isLoading } = useGetCurrentIdentity();
   const signOutMutation = useSignOut();
 
   const handleSignOut = async () => {
@@ -83,6 +85,10 @@ export function WorkspaceSidebar() {
     { icon: Plus, label: 'Create QR Code', href: '/workspace' },
     { icon: History, label: 'My Library', href: '/assets' },
   ];
+
+  const userLabel = isLoading ? 'Authenticating...' : (user?.email?.split('@')[0] || 'Guest');
+  const userStatus = isLoading ? 'Syncing...' : (user ? 'Account Active' : 'Public Access');
+  const userTier = isLoading ? '...' : (user ? 'Pro Account' : 'Free Account');
 
   return (
     <>
@@ -97,9 +103,9 @@ export function WorkspaceSidebar() {
         initial={false}
         animate={{ width: isExpanded ? 280 : 88 }}
         transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-        className="hidden lg:flex flex-col border-r border-zinc-100 bg-zinc-50/50 h-screen sticky top-0 z-40 overflow-visible"
+        className="hidden lg:flex flex-col border-r border-zinc-100 bg-zinc-50/50 h-[100dvh] sticky top-0 z-40 overflow-visible"
       >
-        <div className={`h-24 flex items-center mb-4 overflow-hidden transition-all duration-300 ${isExpanded ? 'px-6' : 'justify-center px-0'}`}>
+        <div className={`h-20 sm:h-24 flex items-center mb-4 overflow-hidden transition-all duration-300 ${isExpanded ? 'px-6' : 'justify-center px-0'}`}>
           <Link href="/assets" className="flex items-center gap-3 min-w-max">
             <div className="w-10 h-10 bg-brand-orange rounded-2xl flex items-center justify-center shadow-lg shadow-orange-100 hover:rotate-6 transition-transform cursor-pointer shrink-0">
               <Zap className="text-white fill-white" size={20} />
@@ -143,14 +149,14 @@ export function WorkspaceSidebar() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 shadow-sm">
-                         <User className="text-brand-orange" size={24} />
+                         {isLoading ? <RefreshCw className="text-zinc-300 animate-spin" size={24} /> : <User className="text-brand-orange" size={24} />}
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-black text-zinc-800 truncate uppercase tracking-tighter">
-                          {user?.email?.split('@')[0] || 'Guest'}
+                          {userLabel}
                         </p>
                         <p className="text-[10px] font-bold text-zinc-400 uppercase">
-                           Account Active
+                           {userStatus}
                         </p>
                       </div>
                     </div>
@@ -158,20 +164,32 @@ export function WorkspaceSidebar() {
                     <div className="space-y-2">
                        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest px-1">Subscription</p>
                        <div className="bg-orange-50/50 p-3 rounded-xl border border-orange-100/50">
-                          <p className="text-xs font-bold text-brand-orange uppercase">{user ? 'Pro Account' : 'Free Account'}</p>
+                          <p className="text-xs font-bold text-brand-orange uppercase">{userTier}</p>
                        </div>
                     </div>
 
                     <div className="h-px w-full bg-zinc-50" />
                     
-                    <Button 
-                      variant="danger" 
-                      size="md" 
-                      className="w-full gap-3 rounded-xl"
-                      onClick={handleSignOut}
-                    >
-                      <LogOut size={16} /> Log Out
-                    </Button>
+                    {user && (
+                      <Button 
+                        variant="danger" 
+                        size="md" 
+                        className="w-full gap-3 rounded-xl"
+                        onClick={handleSignOut}
+                      >
+                        <LogOut size={16} /> Log Out
+                      </Button>
+                    )}
+                    {!user && !isLoading && (
+                      <Button 
+                        variant="primary" 
+                        size="md" 
+                        className="w-full gap-3 rounded-xl"
+                        onClick={() => router.push('/auth/login')}
+                      >
+                        Sign In
+                      </Button>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -182,7 +200,7 @@ export function WorkspaceSidebar() {
               className={`flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer group bg-white/50 border border-transparent hover:border-zinc-200 ${!isExpanded ? 'justify-center' : ''}`}
             >
               <div className="w-8 h-8 bg-zinc-200 rounded-lg shrink-0 flex items-center justify-center text-zinc-500">
-                <User size={16} />
+                {isLoading ? <RefreshCw size={16} className="animate-spin" /> : <User size={16} />}
               </div>
               <AnimatePresence mode="wait">
                 {isExpanded && (
@@ -193,7 +211,7 @@ export function WorkspaceSidebar() {
                     className="flex-1 min-w-0"
                   >
                     <p className="text-[11px] font-black text-zinc-800 truncate uppercase tracking-tighter">
-                      {user?.email?.split('@')[0] || 'Guest'}
+                      {userLabel}
                     </p>
                   </motion.div>
                 )}
@@ -224,7 +242,7 @@ export function WorkspaceSidebar() {
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              className="lg:hidden fixed top-0 left-0 w-[80%] h-full bg-white z-50 p-8 flex flex-col gap-10 shadow-2xl"
+              className="lg:hidden fixed top-0 left-0 w-[85%] sm:w-[320px] h-[100dvh] bg-white z-50 p-6 sm:p-8 flex flex-col gap-8 sm:gap-10 shadow-2xl"
             >
                <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-brand-orange rounded-2xl flex items-center justify-center shadow-xl shadow-orange-100">
@@ -253,11 +271,11 @@ export function WorkspaceSidebar() {
               
               <div className="pt-8 border-t border-zinc-100 flex items-center gap-4">
                 <div className="w-12 h-12 bg-zinc-100 rounded-2xl flex items-center justify-center text-zinc-400">
-                  <User size={24} />
+                  {isLoading ? <RefreshCw size={24} className="animate-spin" /> : <User size={24} />}
                 </div>
                 <div className="flex-1">
-                  <p className="font-black text-sm uppercase tracking-tighter text-zinc-800">{user?.email?.split('@')[0] || 'Guest'}</p>
-                  <p className="text-[10px] font-bold text-brand-orange uppercase">{user ? 'Pro Account' : 'Free Account'}</p>
+                  <p className="font-black text-sm uppercase tracking-tighter text-zinc-800">{userLabel}</p>
+                  <p className="text-[10px] font-bold text-brand-orange uppercase">{userTier}</p>
                 </div>
                 {user && (
                    <button onClick={handleSignOut} className="text-zinc-400 hover:text-red-500">
